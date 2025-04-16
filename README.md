@@ -35,7 +35,7 @@ DataBank is a decentralized data storage system built on the Cardano blockchain 
 
 ## 👨‍💻 Team Members
 - Elizabeth Agada - Lead Developer
-- Malchundi - Project Manager
+- Machundi Zando - Project Manager
 - Favour Isechap - UI/UX Designer
 
 ## 📚 Learning Resources
