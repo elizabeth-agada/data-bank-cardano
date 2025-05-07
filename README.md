@@ -25,6 +25,9 @@ DataBank is a decentralized data storage system built on the Cardano blockchain 
 - **Wallet Integration**: Connect with Nami, Eternl, or other Cardano wallets
 - **Transaction Logic**: eUTXO model for secure document operations
 
+### Smart Contract
+- For the smart contract documentation please check SmartContractReadME.md
+
 ## 🚀 Development Status
 - ✅ Project concept validation
 - ✅ Architecture design
