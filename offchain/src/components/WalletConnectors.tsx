@@ -53,7 +53,7 @@ export default function WalletConnectors() {
 
       setIsModalOpen(false); // Close modal after successful connection
     } catch (error) {
-        handleError(error as { [key: string]: any; info?: string; message?: string });
+        handleError(error as { [key: string]: unknown; info?: string; message?: string });
     }
   }
 

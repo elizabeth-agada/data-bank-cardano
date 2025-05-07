@@ -104,7 +104,7 @@ export async function mint(
     name: string; 
     image: string;
     metadata?: {
-      [key: string]: any;
+      [key: string]: unknown;
     }
   },
   { lucid, walletApi }: WalletConnection,
@@ -240,7 +240,7 @@ export async function mint(
       }
     };
   } catch (error) {
-    handleError(error as { [key: string]: any; info?: string; message?: string });(error as { [key: string]: any; info?: string; message?: string });
+    handleError(error as { [key: string]: unknown; info?: string; message?: string });(error as { [key: string]: unknown; info?: string; message?: string });
   }
 }
 
@@ -319,7 +319,7 @@ export async function update(
 
     return { ...token, utxo };
   } catch (error) {
-    handleError(error as { [key: string]: any; info?: string; message?: string });(error);
+    handleError(error as { [key: string]: unknown; info?: string; message?: string });(error);
   }
 }
 
@@ -364,7 +364,7 @@ export async function burn(
 
     return { ...token, utxo };
   } catch (error) {
-    handleError(error as { [key: string]: any; info?: string; message?: string });(error);
+    handleError(error as { [key: string]: unknown; info?: string; message?: string });(error);
   }
 }
 

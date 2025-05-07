@@ -31,7 +31,7 @@ export default function Navbar() {
           });
         })
         .catch(handleError);
-    }, []);
+    }, [setWalletConnection]);
 
 
     const [isScrolled, setIsScrolled] = useState(false)
