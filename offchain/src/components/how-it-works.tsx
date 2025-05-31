@@ -92,7 +92,7 @@ export default function HowItWorks() {
 
         {/* CTA Button */}
         <div className="mt-12 flex justify-center">
-          <Button className="bg-[#38bdf8] md:px-12 py-6 text-white hover:bg-[#0ea5e9] h-9 rounded-full">Start with DataBank</Button>
+          <Button className="bg-[#38bdf8] md:px-12 py-6 text-white hover:bg-[#0ea5e9] h-9 rounded-md">Start with DataBank</Button>
         </div>
       </div>
     </section>
