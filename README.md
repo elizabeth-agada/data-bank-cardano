@@ -37,23 +37,16 @@ DataBank is a decentralized data storage system built on the Cardano blockchain 
 - 🔜 Wallet connector implementation
 
 ## 👨‍💻 Team Members
-- Elizabeth Agada - Lead Developer
+- Elizabeth Agada - Team Lead/Frontend Developer
 - Machundi Zando - Project Manager
-- Favour Isechap - UI/UX Designer
+- Shagbaor Agber - Smart contract Developer
 
 ## 📚 Learning Resources
 - [Cardano Developer Portal](https://developers.cardano.org/)
 - [Plutus Documentation](https://plutus.readthedocs.io/)
 - [IPFS Documentation](https://docs.ipfs.io/)
 
-## 📊 Roadmap
-1. **Q2 2025**: Prototype development & testing
-2. **Q3 2025**: Alpha release & community testing
-3. **Q4 2025**: Beta release with full functionality
-4. **Q1 2026**: Production release
 
 ## 🔗 Getting Started
 Instructions for setting up the development environment coming soon!
 
-## 📄 License
-This project is licensed under the MIT License - see the LICENSE file for details.
