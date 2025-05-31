@@ -104,7 +104,7 @@ export async function mint(
     name: string; 
     image: string;
     metadata?: {
-      [key: string]: unknown;
+      [key: string]: any;
     }
   },
   { lucid, walletApi }: WalletConnection,
@@ -169,10 +169,15 @@ export async function mint(
     // Generate asset name using Blake2b hash (CIP-68 compliant)
     const assetName = blake2bHex(fromHex(Data.to(nonceUTxO)), undefined, 28);
 
-    // Create token units with proper CIP-68 prefixes
-    const refUnit = toUnit(Script.PolicyID, assetName, 0x000643b0);  // .ref prefix (reference token)
-    const usrUnit = toUnit(Script.PolicyID, assetName, 0x000de140);  // .usr prefix (user token)
-    const mdtUnit = toUnit(Script.PolicyID, assetName, 0x000de141);  // .mdt prefix (metadata token)
+    // Create token units with proper CIP-68 prefixes (corrected values)
+    // CIP-68 standard prefixes as 4-byte hex strings
+    const refTokenName = "000643b0" + assetName; // (100)reference token
+    const usrTokenName = "000de140" + assetName; // (222)user token  
+    const mdtTokenName = "000de141" + assetName; // (333)metadata token
+
+    const refUnit = toUnit(Script.PolicyID, refTokenName);
+    const usrUnit = toUnit(Script.PolicyID, usrTokenName);
+    const mdtUnit = toUnit(Script.PolicyID, mdtTokenName);
 
     // Define assets to mint
     const mintAssets = {
@@ -240,7 +245,7 @@ export async function mint(
       }
     };
   } catch (error) {
-    handleError(error as { [key: string]: unknown; info?: string; message?: string });(error as { [key: string]: unknown; info?: string; message?: string });
+    handleError(error as { [key: string]: any; info?: string; message?: string });
   }
 }
 
@@ -319,7 +324,7 @@ export async function update(
 
     return { ...token, utxo };
   } catch (error) {
-    handleError(error as { [key: string]: unknown; info?: string; message?: string });(error);
+    handleError(error as { [key: string]: any; info?: string; message?: string });(error);
   }
 }
 
@@ -364,7 +369,7 @@ export async function burn(
 
     return { ...token, utxo };
   } catch (error) {
-    handleError(error as { [key: string]: unknown; info?: string; message?: string });(error);
+    handleError(error as { [key: string]: any; info?: string; message?: string });(error);
   }
 }
 
@@ -455,88 +460,94 @@ export function useDocumentUpload({ lucid, address }: WalletConnection) {
     )
 
     const uploadToIpfs = useCallback(
-        async (
-          file: File, 
-          documentName: string, 
-          uploadType: UploadType,
-          walletConnection: WalletConnection
-        ) => {
-          if (!address) {
-            toast.error("Connect your wallet first")
-            return false
-          }
-          
-          if (!file) {
-            toast.error("Select a document to proceed")
-            return false
-          }
-          
-          if (!documentName) {
-            toast.error("Enter document name to proceed")
-            return false
-          }
-          
-          setIsUploading(true)
-          
-          try {
-            // eslint-disable-next-line prefer-const
-            let uploadToast = toast.loading(`Uploading ${documentName} to IPFS!`)
-            
-            const upload = await pinata.upload.file(file)
-            
-            toast.dismiss(uploadToast)
-            setIsUploading(false)
-            
-            toast.success(
-              uploadType === 'mint'
-                ? `Document uploaded to IPFS for minting: ${documentName}`
-                : `Document uploaded to IPFS: ${documentName}`
-            )
-            
-            // Extract file details
-            const fileExtension = file.name.split('.').pop() || ''
-            const fileUrl = `https://${pinataCloudGateway}/ipfs/${upload.IpfsHash}`
-            const fileSize = file.size.toString()
-            
-            // Prepare metadata for the document
-            const metadata = {
-              description: `Document uploaded via Databank`,
-              properties: {
-                type: fileExtension,
-                size: file.size.toString(),
-                hash: upload.IpfsHash
-              }
-            };
-
-            const tokenData = {
-                name: documentName,
-                image: fileUrl,
-                metadata: metadata
-            };
-            
-              // Upload metadata to IPFS
-              const metadataUpload = await pinata.upload.json(metadata);
-              const metadataUrl = `https://${pinataCloudGateway}/ipfs/${metadataUpload.IpfsHash}`;
-              
+      async (
+        file: File,
+        documentName: string,
+        uploadType: UploadType,
+        walletConnection: WalletConnection
+      ) => {
+        if (!address) {
+          toast.error("Connect your wallet first")
+          return false
+        }
     
-            if (uploadType === 'upload') {
-              return storeDocument(address, upload.IpfsHash, metadataUrl, documentName, fileExtension, fileSize, "NOT MINTED")
+        if (!file) {
+          toast.error("Select a document to proceed")
+          return false
+        }
+    
+        setIsUploading(true)
+    
+        try {
+          let uploadToast = toast.loading(`Uploading ${documentName} to IPFS!`)
+    
+          const upload = await pinata.upload.file(file)
+          const fileExtension = file.name.split('.').pop() || ''
+          const fileUrl = `https://${pinataCloudGateway}/ipfs/${upload.IpfsHash}`
+          const fileSize = file.size.toString()
+    
+          // Prepare metadata
+          const metadata = {
+            description: `Document uploaded via Databank`,
+            properties: {
+              type: fileExtension,
+              size: fileSize,
+              hash: upload.IpfsHash
             }
-              
-            // Call mint function if upload type is 'mint'
-            console.log(`The uploaded file hash is ${upload.IpfsHash}, Metadata: ${metadataUrl}, Document name: ${documentName}, File type: ${fileExtension} and file size: ${fileSize}`)
-            return await mint(tokenData, walletConnection, metadataUrl);
+          }
+    
+          // Upload metadata to IPFS
+          const metadataUpload = await pinata.upload.json(metadata)
+          const metadataUrl = `https://${pinataCloudGateway}/ipfs/${metadataUpload.IpfsHash}`
+    
+          toast.dismiss(uploadToast)
+          setIsUploading(false)
+    
+          if (uploadType === 'upload') {
+            // Store document without minting
+            return await storeDocument(
+              address,
+              upload.IpfsHash,
+              metadataUrl,
+              documentName,
+              fileExtension,
+              fileSize,
+              "NOT MINTED"
+            )
+          } else {
+            // For minting, prepare token data and call mint
+            const tokenData = {
+              name: documentName,
+              image: fileUrl,
+              metadata: metadata
+            }
+    
+            // Call mint function
+            const mintResult = await mint(tokenData, walletConnection, metadataUrl)
             
-          } catch (uploadToIpfsError) {
-            console.error("uploadToIpfsError", uploadToIpfsError)
-            
-            toast.error(String(uploadToIpfsError))
-            setIsUploading(false)
+            if (mintResult) {
+              // Store document with minted status
+              return await storeDocument(
+                address,
+                upload.IpfsHash,
+                metadataUrl,
+                documentName,
+                fileExtension,
+                fileSize,
+                "MINTED"
+              )
+            }
             return false
           }
-        },
-        [address, storeDocument, pinata.upload, pinataCloudGateway]
-      )
+        } catch (error) {
+          console.error("uploadToIpfsError:", error)
+          toast.error(String(error))
+          setIsUploading(false)
+          return false
+        }
+      },
+      [address, storeDocument, pinata.upload, pinataCloudGateway, mint]
+    )
       
       return {
         uploadToIpfs,

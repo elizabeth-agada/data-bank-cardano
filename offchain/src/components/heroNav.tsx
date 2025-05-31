@@ -6,15 +6,17 @@ import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Menu } from "lucide-react"
+import dynamic from "next/dynamic";
 
 
 import { Lucid } from "@lucid-evolution/lucid";
 import { useWallet } from "@/components/contexts/wallet/WalletContext"
 import { network, provider } from "@/config/lucid";
 import { handleError } from "@/components/utils";
-import WalletConnectors from "@/components/WalletConnectors";
 import DisconnectButton from "@/components/DisconnectButton";
 export default function Navbar() {
+    const WalletConnectors = dynamic(() => import("./WalletConnectors"), { ssr: false });
+
     const [walletConnection, setWalletConnection] = useWallet();
     const { address } = walletConnection;
   
@@ -31,7 +33,7 @@ export default function Navbar() {
           });
         })
         .catch(handleError);
-    }, [setWalletConnection]);
+    }, []);
 
 
     const [isScrolled, setIsScrolled] = useState(false)
@@ -127,14 +129,20 @@ export default function Navbar() {
                 </nav>
 
                 {/* Connect Wallet Button */}
-                <div className="hidden md:block">
-                    <Button
-                        variant="default"
-                        className="h-9 text-sm font-medium bg-[#2B9DDA] hover:bg-[#2589c2] truncate rounded-full"
-                    >
-                        Connect wallet
-                    </Button>
-                </div>
+                {address ? (
+                    <div className="hidden md:flex items-center lg:space-x-2 xl:space-x-8">
+                        <Link href="/dashboard" className="text-white hover:text-[#38bdf8] transition-colors">
+                            <Button variant="default" className="bg-[#38bdf8] hover:bg-[#0ea5e9] text-white">
+                                Dashboard
+                            </Button>
+                        </Link>
+                        <DisconnectButton />
+                    </div>
+                ) : (
+                    <div className="hidden md:block">
+                        <WalletConnectors />
+                    </div>
+                )}
 
                 {/* Mobile Menu */}
                 <Sheet>

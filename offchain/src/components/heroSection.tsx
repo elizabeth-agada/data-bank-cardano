@@ -1,7 +1,14 @@
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
+import dynamic from "next/dynamic";
+import DisconnectButton from "@/components/DisconnectButton";
+import { useWallet } from "@/components/contexts/wallet/WalletContext"
 
 export default function HeroSection() {
+    const WalletConnectors = dynamic(() => import("./WalletConnectors"), { ssr: false });
+    const [walletConnection, setWalletConnection] = useWallet();
+    const { address } = walletConnection;
+      
     return (
         <div id="home" className="relative w-full overflow-hidden pt-10 md:pt-24 pb-0">
             <div className="container relative z-10 mx-auto px-4">
@@ -22,12 +29,17 @@ export default function HeroSection() {
                     </p>
 
                     {/* CTA Buttons */}
-                    <div className="mt-8 flex flex-wrap justify-center gap-4">
-                        <Button className="bg-[#38bdf8] md:px-12 py-6 text-white hover:bg-[#0ea5e9] h-9 rounded-full">Connect wallet</Button>
-                        <Button variant="outline" className="border-white md:px-12 py-6 text-white hover:bg-gray-800 bg-[#020817] h-9 rounded-full">
-                            Learn more
-                        </Button>
-                    </div>
+                    {address ? (
+                            <div className="mt-8 flex flex-wrap justify-center gap-4">
+                                <DisconnectButton />
+                            </div>
+                        ) : (
+                            <div className="mt-8 flex flex-wrap justify-center gap-4">
+                                <WalletConnectors/>
+                            </div>
+                        )
+                    }
+
 
                     {/* App Screenshot - Half Cropped */}
                     <div className="mt-16 w-full max-w-4xl relative rounded-lg overflow-hidden">

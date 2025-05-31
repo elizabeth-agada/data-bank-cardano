@@ -21,7 +21,7 @@ export function handleSuccess(success: string | object) {
   console.log(success);
 }
 
-export function handleError(error: { info?: string; message?: string; [key: string]: unknown }) {
+export function handleError(error: { info?: string; message?: string; [key: string]: any }) {
   const { info, message } = error;
   const errorMessage = `${message}`;
 
@@ -78,6 +78,6 @@ export function handleError(error: { info?: string; message?: string; [key: stri
     toast.error(
       `${failureTrace ?? failureInfo ?? failureMessage ?? info ?? message ?? error}`,
     );
-    console.error(failureCause ? failureCause : { error: error });
+    console.error(failureCause ?? { error });
   }
 }

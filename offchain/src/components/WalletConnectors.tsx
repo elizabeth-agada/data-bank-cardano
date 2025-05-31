@@ -7,11 +7,13 @@ import { useWallet } from "@/components/contexts/wallet/WalletContext";
 import { Wallet } from "@/types/cardano";
 import { paymentCredentialOf, stakeCredentialOf } from "@lucid-evolution/lucid";
 import { handleError } from "@/components/utils";
-import Image from "next/image";
+import { useRouter } from 'next/navigation';
 export default function WalletConnectors() {
   const [walletConnection, setWalletConnection] = useWallet();
   const { lucid } = walletConnection;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
+
 
   function getWallets() {
     const wallets: Wallet[] = [];
@@ -53,7 +55,7 @@ export default function WalletConnectors() {
 
       setIsModalOpen(false); // Close modal after successful connection
     } catch (error) {
-        handleError(error as { [key: string]: unknown; info?: string; message?: string });
+        handleError(error as { [key: string]: any; info?: string; message?: string });
     }
   }
 
@@ -70,7 +72,7 @@ export default function WalletConnectors() {
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Select a Wallet</DialogTitle>
+            <DialogTitle className="text-black">Select a Wallet</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4">
             {wallets.length ? (
@@ -78,11 +80,14 @@ export default function WalletConnectors() {
                 <Button
                   key={index}
                   variant="outline"
-                  className="flex items-center justify-between"
-                  onClick={() => onConnectWallet(wallet)}
+                  className="flex items-center justify-between text-black hover:text-white"
+                  onClick={async () => { 
+                  await onConnectWallet(wallet); 
+                  setTimeout(() => router.push("/dashboard"), 5000); 
+                  }}
                 >
-                  <span>{wallet.name}</span>
-                  <Image src={wallet.icon} alt={`${wallet.name} icon`} className="h-6 w-6" />
+                  <span>{wallet.name.charAt(0).toUpperCase() + wallet.name.slice(1)}</span>
+                  <img src={wallet.icon} alt={`${wallet.name} icon`} className="h-6 w-6" />
                 </Button>
               ))
             ) : (
